@@ -23,18 +23,20 @@ public int codeLines(list[str] project){
 		return codeLines;
 }
 
-public list[str] unitSize(loc file){
+public void unitSize(loc file){
 	myModel = createM3FromEclipseProject(file);
 	methodSet = methods(myModel);
 	methodList = toList(methodSet);
-	return methodList;
+	reversedMethodList = reverse(methodList);
+	for(int i <- [0..size(reversedMethodList)]){
+		method = reversedMethodList[i];	
+		print(method);
+		print(" - number of lines - ");
+		locFile2List = fileToList(method);
+		codeLinePerMethod = codeLines(locFile2List);
+		println(codeLinePerMethod);
+
+	}
 
 }
 
-public int codeLinesInProject(Resource project){
-	
-}
-
-
-// 	return noLines;
-//}
