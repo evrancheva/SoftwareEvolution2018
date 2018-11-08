@@ -5,11 +5,25 @@ public class HelloWorld {
         System.out.println("Hello, World");
     }
     public static void hello() {
-        // Prints "Hello, World" to the terminal window.
-        System.out.println("Hello, World");
-        System.out.println("Hello, World");
-    }
-    
-    
+    	int a = 22;
+    	if(a > 10 && a < 30) {
+    		System.out.println(a);
+    	}
 
+    }    
+    public int f(int i, int j) {
+        int result = 0;
+        if(i % 2 == 0) {
+            result = i + j;
+        }
+        else {
+            if(j % 2 == 0) {
+                result = i * j;
+            }
+            else {
+                result = i - j;
+            }
+        }
+        return result;
+    }
 }
