@@ -12,60 +12,96 @@ import lang::java::jdt::m3::AST;
 
 public loc dupFile = |project://JavaProject/src/dupCheck.java|;
 public Resource project = getProject(|project://JavaProject/|);
-// TODO remove comments
 // TODO hashing
-// TODO remove empty new lines
-public void fileToListOfSixLines (loc file){
-	list[str] fileStr = readFileLines(file);
-	list[str] blocksOfSix = fileStr;
-	int sizeFile = size(fileStr);
+
+public list[loc] projectToList (Resource project) {
+	list[loc] projectFiles = [];
+	visit (project) {
+		case file(loc f): if (endsWith(f.path, ".java")) { projectFiles = projectFiles + f; }
+	}
+	return projectFiles;
+}
+
+
+public list[str] mergeAllFiles (Resource project) {
+	list[loc] projectFiles = projectToList (project);
+	list[str] mergedFiles = [];
+	for (i <- [0 .. size(projectFiles)]) { 
+		mergedFiles = mergedFiles + readFileLines(projectFiles[i]);
+	}
+	return mergedFiles;
+}
+
+public int fileToListOfSixLines (Resource project) {
+	list[str] mergedFiles = mergeAllFiles(project);
+	list[str] blocksOfSix;
 	
+	// TODO remove comment lines
 	int k = 0;
-	while (k < size(fileStr)) {
-		fileStr[k] = trim(fileStr[k]);
-		if (fileStr[k] == "") {
-			println("before");
-			println(fileStr[k]);
-			fileStr = delete(fileStr,k);
-			println("after");
-			println(fileStr[k]);
+	while (k < size(mergedFiles)) {
+		mergedFiles[k] = trim(mergedFiles[k]);
+		if (mergedFiles[k] == "") {
+			mergedFiles = delete(mergedFiles,k);
 		}
 		k = k + 1;
 	}
-	println(sizeFile);
-	for (int i <- [0 .. size(fileStr)]) {
-		println(fileStr[i]);
-		}
-	for (int i <- [0 .. size(fileStr)-6]) {
-		blocksOfSix[i] = fileStr[i]+fileStr[i+1]+fileStr[i+2]+fileStr[i+3]+fileStr[i+4]+fileStr[i+5];
+	
+	blocksOfSix = mergedFiles;
+	
+	for (int i <- [0 .. 5]) {
+		blocksOfSix = delete(blocksOfSix,0);
 	}
+	
+	println(size(mergedFiles));
+	println(size(blocksOfSix));
+	
+	for (int i <- [0 .. size(mergedFiles)-5]) {
+		blocksOfSix[i] = mergedFiles[i]+mergedFiles[i+1]+mergedFiles[i+2]+mergedFiles[i+3]+mergedFiles[i+4]+mergedFiles[i+5];
+	}
+	for (int i <- [0 .. size(blocksOfSix)]) {
+		print(i);
+		println(blocksOfSix[i]);
+	}
+	
 	int dupCounter = 0;
 	int history = -1;
-	int dupLines=0;
-	for (int i <- [0 .. size(fileStr)-6]) {
-		for (int j <- [i+1 .. size(fileStr)-6]) {
+	int dupLines = 0;
+	int i=0;
+	int j=0;
+	while (i < size(blocksOfSix)) {
+		j = i + 1;
+		while (j < size(blocksOfSix)) {
 			if (blocksOfSix[i] == blocksOfSix[j]) {
 				dupCounter = dupCounter + 1;
-				if (history == i-1) {
+				dupLines = dupLines + 6;
+				println("---");
+				println(i);
+				println(blocksOfSix[i]);
+				println(j);
+				println(blocksOfSix[j]);
+				println("---");
+				i = i + 1;
+				j = j + 1;
+				while (i < size(blocksOfSix) && j < size(blocksOfSix) && blocksOfSix[i] == blocksOfSix[j]) {
 					dupLines = dupLines + 1;
-				}
-				else {
-					dupLines = dupLines + 6;
+					println(i);
 					println(blocksOfSix[i]);
-					println(i+1);
+					println(j);
+					println(blocksOfSix[j]);
+					i = i + 1;
+					j = j + 1;
 				}
-				history = i;
-				}
+			}
+			j = j + 1;
 		}
+		i = i + 1;
 	}
 	print("Found ");
 	print(dupCounter);
-	println(" duplicate blocks of six!");
+	println(" blocks of duplicated code!");
 	
 	print("Found ");
 	print(dupLines);
 	println(" duplicate lines!");
-	
-	//println(blocksOfSix[size(fileStr)-7]);
-	//println(fileStr[size(fileStr)-7]+fileStr[size(fileStr)-6]+fileStr[size(fileStr)-5]+fileStr[size(fileStr)-4]+fileStr[size(fileStr)-3]+fileStr[size(fileStr)-2]);
+	return (dupLines);
 }
