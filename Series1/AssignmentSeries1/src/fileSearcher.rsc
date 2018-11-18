@@ -14,7 +14,7 @@ public loc file = |project://JavaProject/src/HelloWorld.java|;
 public Resource project = getProject(|project://JavaProject/|);
 
 public int filesNumber (Resource project) {
-    int numFiles =0;
+    int numFiles = 0;
 	visit (project) {
 		case file(_): numFiles = numFiles + 1;
 	}
@@ -39,7 +39,7 @@ public int codeLines(Resource project){
 public list[loc] projectToList (Resource project) {
 	list[loc] projectFiles = [];
 	visit (project) {
-		case file(loc f): projectFiles = projectFiles + f;
+		case file(loc f): if (endsWith(f, ".java")) { projectFiles = projectFiles + f; }
 	}
 	return projectFiles;
 }
