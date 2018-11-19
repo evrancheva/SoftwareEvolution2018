@@ -25,7 +25,6 @@ public int calculateDuplicateLines (Resource project) {
 
 	list[str] blocksOfSix = [];
 
-// TODO trim and comments out
 	list[loc] projectFiles = projectToList(project);
 	int duplicatedLines = 0;
 	
@@ -54,5 +53,10 @@ public int calculateDuplicateLines (Resource project) {
 		}
 	}
 	return duplicatedLines;
+}
+
+public str hashTesting (loc file) {
 	
+	return (md5HashFile(file));
+
 }

@@ -16,7 +16,7 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
+public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|(0,6,<0,0>,<6,0>);
 
 public list[str] fileTestStr (loc file) {
 	return readFileLines(fileTest);	
@@ -58,10 +58,11 @@ public list[str] removeComments(list[str] stringsInput) {
 			i = i + 1;
 			stringsInput[i] = trim(stringsInput[i]);
 			while (i < size(stringsInput) && findFirst(stringsInput[i], "*/") == -1) {
-				stringsInput = delete(stringsInput, i);
 				stringsInput[i] = trim(stringsInput[i]);
+				stringsInput = delete(stringsInput, i);
 			}
 			if (i < size(stringsInput)) {
+				stringsInput[i] = trim(stringsInput[i]);			
 				stringsInput[i] = substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2);
 				if (stringsInput[i] == "") {
 				stringsInput = delete(stringsInput, i);
