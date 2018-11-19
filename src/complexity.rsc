@@ -8,6 +8,8 @@ import List;
 import ListRelation;
 import volume;
 import util::Math;
+import helpers;
+
 
 
 import lang::java::m3::AST;
@@ -16,35 +18,17 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 
-public list[loc] projectToList (Resource project) {
-	list[loc] projectFiles = [];
-	visit (project) {
-		case file(loc f): if(f.extension == "java")projectFiles = projectFiles + f;
-	}
-	return projectFiles;
-}
-public int codeLinesProject(Resource project){
-	int codeLines = 0;
-	list[str] file_str = [];
-	projectFiles = projectToList (project);
-	for (i <- [0 .. size(projectFiles)]) {
-		file_str = readFileLines(projectFiles[i]);
-		codeLines = codeLines + size(file_str);
-	}
-	return codeLines;
-}
-
 
 public lrel[int cc, int lines] methodComplexitesForFile(loc file){
 	fileTree = createAstFromFile(file,false);
 	result = [];
 	visit(fileTree) {
 		case m:\constructor(_,_,_,_) :
-			result += <methodComplexity(m),onlyCodeLines(m.src)>;
+			result += <methodComplexity(m),countCodeLines(m.src)>;
 		case m:\method(_,_,_,_,_) :
-			result += <methodComplexity(m),onlyCodeLines(m.src)>;
+			result += <methodComplexity(m),countCodeLines(m.src)>;
 		case m:\method(_,_,_,_) :
-			result += <methodComplexity(m),onlyCodeLines(m.src)>;
+			result += <methodComplexity(m),countCodeLines(m.src)>;
 	};
 	return result;
 }
@@ -90,33 +74,17 @@ public tuple[real simple, real moderate, real high, real untestable] riskPortfol
 			}		
 		}	
 	}
-	totalV = simple + moderate + high + untestable;
+	int totalV = simple + moderate + high + untestable;
 	println(<riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>);
 	return <riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>;
 }
-public real riskInPercentage(int risk, int locOfCode){
-	result = toReal(risk)/toReal(locOfCode)*100;
-	return result;
-}
+
 public str riskPerProject(Resource project){
 	riskp = riskPortfolio(project);
 	return ratingToSymbol(riskp);
 	
 }
 
-public str ratingToSymbol(tuple[real simple, real moderate, real high, real untestable] riskP) {
-	if (riskP.moderate < 25 && riskP.high < 0 && riskP.untestable < 0) {
-		return "++";
-	} else if (riskP.moderate <= 30 && riskP.high <= 5 && riskP.untestable <= 0) {
-		return "+";
-	} else if (riskP.moderate <= 40 && riskP.high <= 10 && riskP.untestable <= 0) {
-		return "o";
-	} else if (riskP.moderate <= 50 && riskP.high <= 15 && riskP.untestable <= 5) {
-		return "-";
-	} else {
-		return "--";
-	}
-}
 
 
 

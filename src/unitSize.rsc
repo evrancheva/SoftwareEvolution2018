@@ -9,6 +9,7 @@ import Set;
 import List;
 import ListRelation;
 import volume;
+import helpers;
 
 
 import lang::java::m3::AST;
@@ -23,11 +24,10 @@ public void unitSize(loc file){
 	methodList = toList(methodSet);
 	reversedMethodList = reverse(methodList);
 	for(int i <- [0..size(reversedMethodList)]){
-		method = reversedMethodList[i];	
-		print(method);
+		methodCode = reversedMethodList[i];	
+		print(methodCode);
 		print(" - number of lines - ");
-		locFile2List = fileToList(method);
-		codeLinePerMethod = codeLines(locFile2List);
+		int codeLinePerMethod = countCodeLines(methodCode);
 		println(codeLinePerMethod);
 
 	}
