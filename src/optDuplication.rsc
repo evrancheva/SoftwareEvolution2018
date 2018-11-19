@@ -5,11 +5,12 @@ import List;
 import util::Resources;
 import String;
 import Set;
+import commentsRemove;
 
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-public Resource project = getProject(|project://JavaProject/|);
+//public Resource project = getProject(|project://JavaProject/|);
 public Resource projectTest = getProject(|project://smallsql0.21_src/|);
 
 public list[loc] projectToList (Resource project) {
@@ -29,12 +30,12 @@ public int calculateDuplicateLines (Resource project) {
 	int duplicatedLines = 0;
 	
 	for (loc file <- projectFiles) {
-		list[str] fileLines = readFileLines(file);
+		list[str] fileLines = removeComments(readFileLines(file));
 		int historyCounter=0;
 		for (currLine <- [0 .. (size(fileLines)-5)]) {
 			str linesOfSix = "";
 			for (i <- [currLine .. (currLine+5)]) {
-				linesOfSix = linesOfSix + trim(fileLines[currLine]);
+				linesOfSix = linesOfSix + fileLines[currLine];
 			}
 			if (linesOfSix in blocksOfSix) {
 				if (historyCounter == 0) {
