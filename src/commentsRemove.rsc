@@ -9,18 +9,12 @@ import List;
 import ListRelation;
 import volume;
 import util::Math;
-
+import helpers;
 
 import lang::java::m3::AST;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
-
-public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|(0,6,<0,0>,<6,0>);
-
-public list[str] fileTestStr (loc file) {
-	return readFileLines(fileTest);	
-	}
 
 
 public list[str] removeComments(list[str] stringsInput) {

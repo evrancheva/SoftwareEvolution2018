@@ -6,20 +6,10 @@ import util::Resources;
 import String;
 import Set;
 import commentsRemove;
+import helpers;
 
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
-
-//public Resource project = getProject(|project://JavaProject/|);
-public Resource projectTest = getProject(|project://smallsql0.21_src/|);
-
-public list[loc] projectToList (Resource project) {
-	list[loc] projectFiles = [];
-	visit (project) {
-		case file(loc f): if (endsWith(f.path, ".java")) { projectFiles = projectFiles + f; }
-	}
-	return projectFiles;
-}
 
 public int calculateDuplicateLines (Resource project) {
 
