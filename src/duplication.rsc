@@ -113,4 +113,17 @@ public int fileToListOfSixLines (Resource project) {
 	}
 }
 
+public str duplicationRating(real duplicationRate){
+	if (duplicationRate <= toReal(3)) {
+		return "++";
+	} else if (duplicationRate <= toReal(5)) {
+		return "+";
+	} else if (duplicationRate <= toReal(10)) {
+		return "o";
+	} else if (duplicationRate <= toReal(20)) {
+		return "-";
+	} else {
+		return "--";
+	}
 
+}

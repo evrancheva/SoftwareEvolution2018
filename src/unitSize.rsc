@@ -21,7 +21,7 @@ import lang::java::jdt::m3::AST;
 public list[int] unitSize(Resource project){
 	list[loc] projectFiles = projectToList(project);
 	list[int] unitSizes = [];
-	for (currFile <- projectFiles) { 
+	for (currFile <- projectFiles) {
 		myModel = createM3FromEclipseProject(currFile);
 		methodSet = methods(myModel);
 		methodList = toList(methodSet);
@@ -31,5 +31,21 @@ public list[int] unitSize(Resource project){
 			unitSizes += codeLinePerMethod;
 		}
 	}
+	
 	return unitSizes;
 }
+
+public list[int] unitSizeFaster(loc file){
+	myModel = createM3FromEclipseProject(file);
+	methodSet = methods(myModel);
+	methodList = toList(methodSet);
+	unitSizes = [];
+	for(int i <- [0..size(methodList)]){
+			methodCode = methodList[i];	
+			int codeLinePerMethod = countCodeLines(methodCode);
+			unitSizes += codeLinePerMethod;
+	}
+	
+	return unitSizes;
+}
+

@@ -20,30 +20,26 @@ public int countCodeLines(loc file){
 }
 
 
-public loc getFragment(loc f, int startLine, int endLine) {
+public int codeLinesProject(Resource project){
+	int codeLines = 0;
+	list[loc] projectFiles = projectToList(project);
+	for (i <- [0 .. size(projectFiles)]) {
+		codeLines += size(removeComments(readFileLines(projectFiles[i])));
+	}
+	return codeLines;
+}
 
-    loc fragment = |file:///null|;
-    int eol = 2;
-
-    if (exists(f)) {
-        int offset = 0;
-        int len = 0;
-        int i = 0;
-        int endCol = 0;
-        for (str line <- readFileLines(f)) {
-            i += 1;
-            if (i < startLine) {
-                offset += size(line) + eol;
-            } else if (i <= endLine) {
-                len += size(line);
-                if (i == endLine) {
-                    endCol = size(line);
-                } else {
-                    len += eol;
-                }
-            }
-        }
-        fragment = f(offset,len,<startLine,0>,<endLine,endCol>);
-    } 
-    return fragment;
+public str volumeCountRating(int fileLines){
+	
+	if (fileLines <= 66000) {
+		return "++";
+	} else if (fileLines <= 246000) {
+		return "+";
+	} else if (fileLines <= 665000) {
+		return "o";
+	} else if (fileLines <= 1310000) {
+		return "-";
+	} else {
+		return "--";
+	}
 }

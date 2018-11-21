@@ -75,7 +75,6 @@ public tuple[real simple, real moderate, real high, real untestable] riskPortfol
 		}	
 	}
 	int totalV = simple + moderate + high + untestable;
-	println(<riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>);
 	return <riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>;
 }
 
