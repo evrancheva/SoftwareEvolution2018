@@ -5,36 +5,35 @@ import List;
 import util::Resources;
 import String;
 import Set;
+import util::Math;
+
 import commentsRemove;
+import helpers;
 
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-//public Resource project = getProject(|project://JavaProject/|);
-public Resource projectTest = getProject(|project://smallsql0.21_src/|);
-
-public list[loc] projectToList (Resource project) {
-	list[loc] projectFiles = [];
-	visit (project) {
-		case file(loc f): if (endsWith(f.path, ".java")) { projectFiles = projectFiles + f; }
-	}
-	return projectFiles;
-}
-
-public int calculateDuplicateLines (Resource project) {
+public real calculateDuplicateLines (Resource project) {
 
 	list[str] blocksOfSix = [];
 
 	list[loc] projectFiles = projectToList(project);
 	int duplicatedLines = 0;
+	int totalLines = 0;
+	str linesOfSix = "";
 	
 	for (loc file <- projectFiles) {
 		list[str] fileLines = removeComments(readFileLines(file));
-		int historyCounter=0;
+		if (size(fileLines) <6) {
+			totalLines = totalLines + size(fileLines);
+			continue;
+		}
+		totalLines = totalLines + size(fileLines);
+		int historyCounter = 0;
 		for (currLine <- [0 .. (size(fileLines)-5)]) {
-			str linesOfSix = "";
-			for (i <- [currLine .. (currLine+5)]) {
-				linesOfSix = linesOfSix + fileLines[currLine];
+			linesOfSix = "";
+			for (i <- [currLine .. (currLine+6)]) {
+				linesOfSix = linesOfSix + fileLines[i];
 			}
 			if (linesOfSix in blocksOfSix) {
 				if (historyCounter == 0) {
@@ -52,11 +51,41 @@ public int calculateDuplicateLines (Resource project) {
 			
 		}
 	}
-	return duplicatedLines;
+	return (toReal(duplicatedLines)/toReal(totalLines) * 100);
 }
 
-public str hashTesting (loc file) {
-	
-	return (md5HashFile(file));
+// Code found on stack overflow
+public loc getFragment(loc f, int startLine, int endLine) {
+
+    loc fragment = |file:///null|;
+    int eol = 2;
+
+    if (exists(f)) {
+        int offset = 0;
+        int len = 0;
+        int i = 0;
+        int endCol = 0;
+        for (str line <- readFileLines(f)) {
+            i += 1;
+            if (i < startLine) {
+                offset += size(line) + eol;
+            } else if (i <= endLine) {
+                len += size(line);
+                if (i == endLine) {
+                    endCol = size(line);
+                } else {
+                    len += eol;
+                }
+            }
+        }
+        fragment = f(offset,len,<startLine,0>,<endLine,endCol>);
+    } 
+    return fragment;
+}
+// Hashing implemented function of Rascal doesn't work for partitions of files
+public str hashTesting (loc file, int startLine) {
+	println(readFileLines(getFragment(file, startLine, startLine+5)));
+	return(md5HashFile(getFragment(file, startLine, startLine+5)));
+
 
 }
