@@ -18,7 +18,7 @@ import lang::java::jdt::m3::AST;
 
 
 public loc file = |project://JavaProject/src/HelloWorld.java|;
-public Resource project = getProject(|project://smallsql0.21_src/|);
+public Resource project = getProject(|project://JavaProject/|);
 public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
 
 public list[str] fileToList(loc file){
