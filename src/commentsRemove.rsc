@@ -25,7 +25,7 @@ public list[str] removeComments(list[str] stringsInput) {
 		// Dropping the comments of type "//..." from a line. If the line contained only a comment
 		// of type "//...", then it deletes the line completely.
 		if (findFirst(stringsInput[i], "//") != -1) {
-			stringsInput[i] = substring(stringsInput[i], 0, findFirst(stringsInput[i], "//"));
+			stringsInput[i] = trim(substring(stringsInput[i], 0, findFirst(stringsInput[i], "//")));
 			if (stringsInput[i] == "") {
 				stringsInput = delete(stringsInput, i);
 				i = i - 1;
@@ -36,15 +36,19 @@ public list[str] removeComments(list[str] stringsInput) {
 		// Then it drops the comment area from the line. If the line contained only comment
 		// it gets removed completely.
 		else if (findFirst(stringsInput[i], "/*") != -1 && (findFirst(stringsInput[i], "*/") != -1)) {
-			tempStr = substring(stringsInput[i], 0, findFirst(stringsInput[i], "/*"));
-			stringsInput[i] = tempStr + substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2);
+			tempStr = trim(substring(stringsInput[i], 0, findFirst(stringsInput[i], "/*")));
+			stringsInput[i] = tempStr + trim(substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2));
+			if (stringsInput[i] == "") {
+				stringsInput = delete(stringsInput, i);
+				i = i - 1;
+			}
 		}
 		
 		// Checking for comments of type "/* ... */" that start from a line and end at another
 		// line and  deletes all lines in between.
 		else if (findFirst(stringsInput[i], "/*") != -1) {
 			
-			stringsInput[i] = substring(stringsInput[i], 0, findFirst(stringsInput[i], "/*"));
+			stringsInput[i] = trim(substring(stringsInput[i], 0, findFirst(stringsInput[i], "/*")));
 			if (stringsInput[i] == "") {
 				stringsInput = delete(stringsInput, i);
 				i = i - 1;
@@ -57,7 +61,7 @@ public list[str] removeComments(list[str] stringsInput) {
 			}
 			if (i < size(stringsInput)) {
 				stringsInput[i] = trim(stringsInput[i]);			
-				stringsInput[i] = substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2);
+				stringsInput[i] = trim(substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2));
 				if (stringsInput[i] == "") {
 				stringsInput = delete(stringsInput, i);
 				i = i - 1;
