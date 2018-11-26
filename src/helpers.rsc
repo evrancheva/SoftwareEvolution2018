@@ -146,7 +146,7 @@ public int symbolToInt(str rating){
 	}
 }
 
-public int intToSymbol(str rating){
+public str intToSymbol(int rating){
 	if (rating == 5) {
 		return "++";
 	} else if (rating == 4) {

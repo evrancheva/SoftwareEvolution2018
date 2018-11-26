@@ -73,29 +73,18 @@ public tuple[real simple, real moderate, real high, real untestable] unitSizePor
 	int totalV = simple + moderate + high + untestable;
 	return <riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>;
 }
-public int unitSizeRatingToStar(tuple[real simple, real moderate, real high, real untestable] riskP) {
+public str unitSizeRatingToSymbol(tuple[real simple, real moderate, real high, real untestable] riskP) {
 	if (riskP.moderate < 19.5 && riskP.high < 10.9 && riskP.untestable < 3.9) {
-		return 5;
+		return "++";
 	} else if (riskP.moderate <= 26.0 && riskP.high <= 15.5 && riskP.untestable <= 6.5) {
-		return 4;
+		return "+";
 	} else if (riskP.moderate <= 34.1 && riskP.high <= 22.2 && riskP.untestable <= 11.0) {
-		return 3;
+		return "o";
 	} else if (riskP.moderate <= 45.9 && riskP.high <= 31.4 && riskP.untestable <= 18.1) {
-		return 2;
+		return "-";
 	} else {
-		return 1;
+		return "--";
 	}
 }
 
-public str unitSizeRatingToSymbol(tuple[real simple, real moderate, real high, real untestable] riskP) {
-	if (distribution.untestable == 0 && distribution.high == 0 && distribution.moderate <= 25) {
-		return "++";
-	} else if (distribution.untestable == 0 && distribution.high <= 5 && distribution.moderate <= 30) {
-		return "+";
-	} else if (distribution.untestable == 0 && distribution.high <= 10 && distribution.moderate <= 40) {
-		return "o";
-	} else if (distribution.untestable <= 5 && distribution.high <= 15 && distribution.moderate <= 50) {
-		return "-";
-	}
-	return "--";
-}
+

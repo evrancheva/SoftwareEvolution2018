@@ -21,11 +21,15 @@ public void main(){
    	print("Volume: ");
    	println(smallSqlCodeLines);
    	print("Volume rating: ");
-   	println(volumeCountRating(smallSqlCodeLines));
+   	volumeRating = volumeCountRating(smallSqlCodeLines);
+   	println(volumeRating);
    	print("Average Unit Size: ");
    	unitSizes = unitSizeFaster(fileSmallSQL);
    	averageUnitSize = (toReal(sum(unitSizes)) / toReal(size(unitSizes)));
    	println(averageUnitSize);
+   	print("Unit Size Rating: ");
+   	unitSizeRating =unitSizeRatingToSymbol(unitSizePortfolio(unitSizes));
+   	println(unitSizeRating);
    	println("Cyclomatic complexity: ");
    	complexityPortfolio = riskPortfolio(smallSQL);
    	print("Low risk: ");
@@ -37,12 +41,28 @@ public void main(){
    	print("Very high risk: ");
    	println(complexityPortfolio.untestable);
    	print("Cyclomatic Complexity Rating: "); 
-   	println(riskPerProject(smallSQL));
+   	complexityRating = riskPerProject(smallSQL);
+   	println(complexityRating);
    	duplication = calculateDuplicateLines(smallSQL);
    	print("Duplication rate: ");
    	println(duplication);
    	print("Duplication Rating: ");
-   	println(duplicationRating(duplication));
+   	duplicationRatingS = duplicationRating(duplication);
+   	println(duplicationRatingS);
    	println("----------------------------");
+   	print("Analysability: ");
+   	analysibility = analysabilityMetric(volumeRating,duplicationRatingS,unitSizeRating);
+   	println(analysibility);
+   	print("Changeability: ");
+   	changeability = changeabilityMetric(complexityRating,duplicationRatingS);
+   	println(changeability);	
+   	print("Testability: ");
+   	terability = testabilityMetric(unitSizeRating,complexityRating);
+   	println(terability);	
+   	print("Maintainability: ");
+   	maintainabilty = maintainabilityMetric(analysibility,changeability,terability);
+   	println(maintainabilty);
+   	
+   	//public str testabilityMetric(str unitSizeRating, str unitComplexityRating){
  
 }
