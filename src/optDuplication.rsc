@@ -24,6 +24,7 @@ public real calculateDuplicateLines (Resource project) {
 	
 	for (loc file <- projectFiles) {
 		list[str] fileLines = removeComments(readFileLines(file));
+		// if the file contains less than 6 lines, there is no point on checking for duplicate ones
 		if (size(fileLines) <6) {
 			totalLines = totalLines + size(fileLines);
 			continue;
@@ -32,14 +33,17 @@ public real calculateDuplicateLines (Resource project) {
 		int historyCounter = 0;
 		for (currLine <- [0 .. (size(fileLines)-5)]) {
 			linesOfSix = "";
+			// create blocks of six code lines
 			for (i <- [currLine .. (currLine+6)]) {
 				linesOfSix = linesOfSix + fileLines[i];
 			}
+			// if we have encountered the block of six lines again, count them as duplicates
 			if (linesOfSix in blocksOfSix) {
 				if (historyCounter == 0) {
 					duplicatedLines = duplicatedLines + 6;
 					historyCounter = 1;
 				}
+				// if we have consecutive blocks of six duplicated, count only the new code line as duplicated
 				else {
 					duplicatedLines = duplicatedLines + 1;
 				}
@@ -51,10 +55,12 @@ public real calculateDuplicateLines (Resource project) {
 			
 		}
 	}
+	println(totalLines);
 	return (toReal(duplicatedLines)/toReal(totalLines) * 100);
 }
 
-// Code found on stack overflow
+// Code found on stack overflow to get a fragment of file, in order to use the hashing
+// function. Apparently the hashing function doesn't work with fragments of files.
 public loc getFragment(loc f, int startLine, int endLine) {
 
     loc fragment = |file:///null|;
@@ -91,13 +97,13 @@ public str hashTesting (loc file, int startLine) {
 }
 
 public str duplicationRating(real duplicationRate){
-	if (duplicationRate <= toReal(3)) {
+	if (duplicationRate <= 3.0) {
 		return "++";
-	} else if (duplicationRate <= toReal(5)) {
+	} else if (duplicationRate <= 5.0) {
 		return "+";
-	} else if (duplicationRate <= toReal(10)) {
+	} else if (duplicationRate <= 10.0) {
 		return "o";
-	} else if (duplicationRate <= toReal(20)) {
+	} else if (duplicationRate <= 20.0) {
 		return "-";
 	} else {
 		return "--";

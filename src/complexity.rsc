@@ -10,8 +10,6 @@ import volume;
 import util::Math;
 import helpers;
 
-
-
 import lang::java::m3::AST;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
@@ -60,6 +58,7 @@ public tuple[real simple, real moderate, real high, real untestable] riskPortfol
 	int untestable = 0;
 	onlyFiles = projectToList(project);
 	locPerProject = codeLinesProject(project);
+	println(size(onlyFiles));
 	for(int i <- [0..size(onlyFiles)]){
 		lrel[int cc,int lines] file = methodComplexitesForFile(onlyFiles[i]);
 		for(int j <- [0..size(file)]){
