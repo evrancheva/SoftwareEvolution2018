@@ -132,3 +132,30 @@ public str ratingToSymbol(tuple[real simple, real moderate, real high, real unte
 	}
 }
 
+public int symbolToInt(str rating){
+	if (rating == "++") {
+		return 5;
+	} else if (rating == "+") {
+		return 4;
+	} else if (rating == "o") {
+		return 3;
+	} else if (rating == "-") {
+		return 2;
+	} else {
+		return 1;
+	}
+}
+
+public int intToSymbol(str rating){
+	if (rating == 5) {
+		return "++";
+	} else if (rating == 4) {
+		return "+";
+	} else if (rating == 1) {
+		return "o";
+	} else if (rating == 2) {
+		return "-";
+	} else {
+		return "--";
+	}
+}

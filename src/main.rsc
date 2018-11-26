@@ -9,6 +9,7 @@ import volume;
 import unitSize;
 import complexity;
 import optDuplication;
+import sigMetrics;
 
 public Resource smallSQL = getProject(|project://smallsql0.21_src/|);
 public loc fileSmallSQL = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
@@ -26,7 +27,7 @@ public void main(){
    	averageUnitSize = (toReal(sum(unitSizes)) / toReal(size(unitSizes)));
    	println(averageUnitSize);
    	println("Cyclomatic complexity: ");
-   	complexityPortfolio = riskPortfolio(project);
+   	complexityPortfolio = riskPortfolio(smallSQL);
    	print("Low risk: ");
    	println(complexityPortfolio.simple);
    	print("Moderate risk: ");
@@ -42,6 +43,6 @@ public void main(){
    	println(duplication);
    	print("Duplication Rating: ");
    	println(duplicationRating(duplication));
-   	
+   	println("----------------------------");
  
 }
