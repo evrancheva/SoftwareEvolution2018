@@ -73,13 +73,22 @@ public tuple[real simple, real moderate, real high, real untestable] riskPortfol
 		}	
 	}
 	int totalV = simple + moderate + high + untestable;
-	return <riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>;
+	return <calculatePercentage(simple,totalV),calculatePercentage(moderate,totalV),calculatePercentage(high,totalV),calculatePercentage(untestable,totalV)>;
 }
 
-public str riskPerProject(Resource project){
-	riskp = riskPortfolio(project);
-	return ratingToSymbol(riskp);
-	
+
+public str unitSizeRating(tuple[real simple, real moderate, real high, real untestable] riskP) {
+	if (riskP.moderate < 25 && riskP.high < 0 && riskP.untestable < 0) {
+		return "++";
+	} else if (riskP.moderate <= 30 && riskP.high <= 5 && riskP.untestable <= 0) {
+		return "+";
+	} else if (riskP.moderate <= 40 && riskP.high <= 10 && riskP.untestable <= 0) {
+		return "o";
+	} else if (riskP.moderate <= 50 && riskP.high <= 15 && riskP.untestable <= 5) {
+		return "-";
+	} else {
+		return "--";
+	}
 }
 
 

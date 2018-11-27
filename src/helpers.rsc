@@ -113,23 +113,16 @@ public list[str] removeComments(list[str] stringsInput) {
 	return stringsInput;
 }
 
-public real riskInPercentage(int risk, int locOfCode){
-	result = toReal(risk)/toReal(locOfCode)*100;
-	return result;
+public int countCodeLines(loc file){
+	listOfCode = fileToList(file);
+	list[str] onlyCodeLines = removeComments(listOfCode);
+	return size(onlyCodeLines);
 }
 
-public str ratingToSymbol(tuple[real simple, real moderate, real high, real untestable] riskP) {
-	if (riskP.moderate < 25 && riskP.high < 0 && riskP.untestable < 0) {
-		return "++";
-	} else if (riskP.moderate <= 30 && riskP.high <= 5 && riskP.untestable <= 0) {
-		return "+";
-	} else if (riskP.moderate <= 40 && riskP.high <= 10 && riskP.untestable <= 0) {
-		return "o";
-	} else if (riskP.moderate <= 50 && riskP.high <= 15 && riskP.untestable <= 5) {
-		return "-";
-	} else {
-		return "--";
-	}
+
+public real calculatePercentage(int risk, int locOfCode){
+	result = toReal(risk)/toReal(locOfCode)*100;
+	return result;
 }
 
 public int symbolToInt(str rating){

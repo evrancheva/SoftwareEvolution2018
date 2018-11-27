@@ -23,13 +23,19 @@ public void main(){
    	print("Volume rating: ");
    	volumeRating = volumeCountRating(smallSqlCodeLines);
    	println(volumeRating);
+   	
    	print("Average Unit Size: ");
-   	unitSizes = unitSizeFaster(fileSmallSQL);
+   	firstFileSmallSQL = projectToList(smallSQL)[0];
+   	unitSizes = unitSizeFaster(firstFileSmallSQL);
+   	
    	averageUnitSize = (toReal(sum(unitSizes)) / toReal(size(unitSizes)));
    	println(averageUnitSize);
+   	
    	print("Unit Size Rating: ");
-   	unitSizeRating =unitSizeRatingToSymbol(unitSizePortfolio(unitSizes));
+   	unitsizePortfolio =unitSizePortfolio(unitSizes);
+   	unitSizeRating = unitSizeRatingToSymbol(unitsizePortfolio);
    	println(unitSizeRating);
+   	
    	println("Cyclomatic complexity: ");
    	complexityPortfolio = riskPortfolio(smallSQL);
    	print("Low risk: ");
@@ -40,29 +46,34 @@ public void main(){
    	println(complexityPortfolio.high);
    	print("Very high risk: ");
    	println(complexityPortfolio.untestable);
+   	
    	print("Cyclomatic Complexity Rating: "); 
-   	complexityRating = riskPerProject(smallSQL);
+   	complexityRating = unitSizeRating(complexityPortfolio);
    	println(complexityRating);
-   	duplication = calculateDuplicateLines(smallSQL);
+   	
    	print("Duplication rate: ");
+   	duplication = calculateDuplicateLines(smallSQL);
    	println(duplication);
    	print("Duplication Rating: ");
    	duplicationRatingS = duplicationRating(duplication);
    	println(duplicationRatingS);
-   	println("----------------------------");
+   	
+
    	print("Analysability: ");
    	analysibility = analysabilityMetric(volumeRating,duplicationRatingS,unitSizeRating);
    	println(analysibility);
+   	
    	print("Changeability: ");
    	changeability = changeabilityMetric(complexityRating,duplicationRatingS);
    	println(changeability);	
+   	
    	print("Testability: ");
    	terability = testabilityMetric(unitSizeRating,complexityRating);
    	println(terability);	
+   	
    	print("Maintainability: ");
    	maintainabilty = maintainabilityMetric(analysibility,changeability,terability);
    	println(maintainabilty);
    	
-   	//public str testabilityMetric(str unitSizeRating, str unitComplexityRating){
  
 }

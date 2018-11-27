@@ -17,7 +17,7 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-// Unit Size 
+
 public list[int] unitSize(Resource project){
 	list[loc] projectFiles = projectToList(project);
 	list[int] unitSizes = [];
@@ -71,8 +71,9 @@ public tuple[real simple, real moderate, real high, real untestable] unitSizePor
 		}
 	}
 	int totalV = simple + moderate + high + untestable;
-	return <riskInPercentage(simple,totalV),riskInPercentage(moderate,totalV),riskInPercentage(high,totalV),riskInPercentage(untestable,totalV)>;
+	return <calculatePercentage(simple,totalV),calculatePercentage(moderate,totalV),calculatePercentage(high,totalV),calculatePercentage(untestable,totalV)>;
 }
+
 public str unitSizeRatingToSymbol(tuple[real simple, real moderate, real high, real untestable] riskP) {
 	if (riskP.moderate < 19.5 && riskP.high < 10.9 && riskP.untestable < 3.9) {
 		return "++";

@@ -12,14 +12,6 @@ import commentsRemove;
 import helpers;
 
 
-
-public int countCodeLines(loc file){
-	listOfCode = fileToList(file);
-	list[str] onlyCodeLines = removeComments(listOfCode);
-	return size(onlyCodeLines);
-}
-
-
 public int codeLinesProject(Resource project){
 	int codeLines = 0;
 	list[loc] projectFiles = projectToList(project);
