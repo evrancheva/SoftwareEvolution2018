@@ -26,6 +26,7 @@ public real calculateNewDuplicateLines (Resource project) {
 	str linesOfSix = "";
 	
 	for (loc file <- projectFiles) {
+		println(file);
 		list[str] fileLines = removeComments(readFileLines(file));
 		// if the file contains less than 6 lines, there is no point to check for duplicate code
 		if (size(fileLines) <6) {

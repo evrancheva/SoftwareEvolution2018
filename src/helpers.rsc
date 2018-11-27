@@ -18,7 +18,7 @@ import lang::java::jdt::m3::AST;
 
 
 public loc file = |project://JavaProject/src/HelloWorld.java|;
-public Resource project = getProject(|project://smallsql0.21_src/|);
+public Resource project = getProject(|project://hsqldb-2.3.1/|);
 public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
 public loc fileTest2 = |project://smallsql0.21_src/src/smallsql/database/Columns.java|;
 
@@ -144,7 +144,7 @@ public str intToSymbol(int rating){
 		return "++";
 	} else if (rating == 4) {
 		return "+";
-	} else if (rating == 1) {
+	} else if (rating == 3) {
 		return "o";
 	} else if (rating == 2) {
 		return "-";

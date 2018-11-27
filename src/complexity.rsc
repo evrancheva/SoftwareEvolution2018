@@ -51,11 +51,11 @@ public int methodComplexity(Declaration method){
 	return count;
 }
 
-public tuple[real simple, real moderate, real high, real untestable] riskPortfolio(Resource project){
+public tuple[real simple, real moderate, real high, real veryHigh] riskPortfolio(Resource project){
 	int simple = 0;
 	int moderate = 0;
 	int high = 0; 
-	int untestable = 0;
+	int veryHigh = 0;
 	onlyFiles = projectToList(project);
 	locPerProject = codeLinesProject(project);
 	for(int i <- [0..size(onlyFiles)]){
@@ -68,23 +68,22 @@ public tuple[real simple, real moderate, real high, real untestable] riskPortfol
 			}else if(file[j].cc  >= 21 && file[j].cc  <= 50){
 					high += file[j].lines;
 			}else{
-					untestable += file[j].lines;
+					veryHigh += file[j].lines;
 			}		
 		}	
 	}
-	int totalV = simple + moderate + high + untestable;
-	return <calculatePercentage(simple,totalV),calculatePercentage(moderate,totalV),calculatePercentage(high,totalV),calculatePercentage(untestable,totalV)>;
+	int totalV = simple + moderate + high + veryHigh;
+	return <calculatePercentage(simple,totalV),calculatePercentage(moderate,totalV),calculatePercentage(high,totalV),calculatePercentage(veryHigh,totalV)>;
 }
 
-
-public str unitSizeRating(tuple[real simple, real moderate, real high, real untestable] riskP) {
-	if (riskP.moderate < 25 && riskP.high < 0 && riskP.untestable < 0) {
+public str cyclomaticComplexityRatingToSymbol(tuple[real simple, real moderate, real high, real veryHigh] riskP) {
+	if (riskP.moderate < 25 && riskP.high < 0 && riskP.veryHigh < 0) {
 		return "++";
-	} else if (riskP.moderate <= 30 && riskP.high <= 5 && riskP.untestable <= 0) {
+	} else if (riskP.moderate <= 30 && riskP.high <= 5 && riskP.veryHigh <= 0) {
 		return "+";
-	} else if (riskP.moderate <= 40 && riskP.high <= 10 && riskP.untestable <= 0) {
+	} else if (riskP.moderate <= 40 && riskP.high <= 10 && riskP.veryHigh <= 0) {
 		return "o";
-	} else if (riskP.moderate <= 50 && riskP.high <= 15 && riskP.untestable <= 5) {
+	} else if (riskP.moderate <= 50 && riskP.high <= 15 && riskP.veryHigh <= 5) {
 		return "-";
 	} else {
 		return "--";

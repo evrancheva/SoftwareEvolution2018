@@ -11,7 +11,7 @@ import complexity;
 import optDuplication;
 import sigMetrics;
 
-public Resource smallSQL = getProject(|project://smallsql0.21_src/|);
+public Resource smallSQL = getProject(|project://hsqldb-2.3.1/|);
 public loc fileSmallSQL = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
 
 public void main(){
@@ -32,9 +32,9 @@ public void main(){
    	println(averageUnitSize);
    	
    	print("Unit Size Rating: ");
-   	unitsizePortfolio =unitSizePortfolio(unitSizes);
-   	unitSizeRating = unitSizeRatingToSymbol(unitsizePortfolio);
-   	println(unitSizeRating);
+   	usPortfolio = unitSizePortfolio(unitSizes);
+   	usRating = unitSizeRatingToSymbol(usPortfolio);
+   	println(usRating);
    	
    	println("Cyclomatic complexity: ");
    	complexityPortfolio = riskPortfolio(smallSQL);
@@ -45,10 +45,10 @@ public void main(){
    	print("High risk: ");
    	println(complexityPortfolio.high);
    	print("Very high risk: ");
-   	println(complexityPortfolio.untestable);
+   	println(complexityPortfolio.veryHigh);
    	
    	print("Cyclomatic Complexity Rating: "); 
-   	complexityRating = unitSizeRating(complexityPortfolio);
+   	complexityRating = cyclomaticComplexityRatingToSymbol(complexityPortfolio);
    	println(complexityRating);
    	
    	print("Duplication rate: ");
@@ -60,7 +60,7 @@ public void main(){
    	
 
    	print("Analysability: ");
-   	analysibility = analysabilityMetric(volumeRating,duplicationRatingS,unitSizeRating);
+   	analysibility = analysabilityMetric(volumeRating,duplicationRatingS,usRating);
    	println(analysibility);
    	
    	print("Changeability: ");
@@ -68,7 +68,7 @@ public void main(){
    	println(changeability);	
    	
    	print("Testability: ");
-   	terability = testabilityMetric(unitSizeRating,complexityRating);
+   	terability = testabilityMetric(usRating,complexityRating);
    	println(terability);	
    	
    	print("Maintainability: ");
