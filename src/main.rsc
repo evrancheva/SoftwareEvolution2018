@@ -11,22 +11,23 @@ import complexity;
 import optDuplication;
 import sigMetrics;
 
-public Resource smallSQL = getProject(|project://hsqldb-2.3.1/|);
-public loc fileSmallSQL = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
+//To measure the metrics for the other project change the location of the project
+
+public Resource projectAnalyzed = getProject(|project://smallsql0.21_src/|);
 
 public void main(){
 	//smallsql 
-	println("Small SQL project ");
-   	smallSqlCodeLines = codeLinesProject(smallSQL);
+	println("Project Measures: ");
+   	codeLinesOfProject = codeLinesProject(projectAnalyzed);
    	print("Volume: ");
-   	println(smallSqlCodeLines);
+   	println(codeLinesOfProject);
    	print("Volume rating: ");
-   	volumeRating = volumeCountRating(smallSqlCodeLines);
+   	volumeRating = volumeCountRating(codeLinesOfProject);
    	println(volumeRating);
    	
    	print("Average Unit Size: ");
-   	firstFileSmallSQL = projectToList(smallSQL)[0];
-   	unitSizes = unitSizeFaster(firstFileSmallSQL);
+   	firstFileOfProjectAnalyzed = projectToList(projectAnalyzed)[0];
+   	unitSizes = unitSizeFaster(firstFileOfProjectAnalyzed);
    	
    	averageUnitSize = (toReal(sum(unitSizes)) / toReal(size(unitSizes)));
    	println(averageUnitSize);
@@ -37,7 +38,7 @@ public void main(){
    	println(usRating);
    	
    	println("Cyclomatic complexity: ");
-   	complexityPortfolio = riskPortfolio(smallSQL);
+   	complexityPortfolio = riskPortfolio(projectAnalyzed);
    	print("Low risk: ");
    	println(complexityPortfolio.simple);
    	print("Moderate risk: ");
@@ -52,7 +53,7 @@ public void main(){
    	println(complexityRating);
    	
    	print("Duplication rate: ");
-   	duplication = calculateDuplicateLines(smallSQL);
+   	duplication = calculateDuplicateLines(projectAnalyzed);
    	println(duplication);
    	print("Duplication Rating: ");
    	duplicationRatingS = duplicationRating(duplication);
@@ -68,12 +69,12 @@ public void main(){
    	println(changeability);	
    	
    	print("Testability: ");
-   	terability = testabilityMetric(usRating,complexityRating);
-   	println(terability);	
+   	testability = testabilityMetric(usRating,complexityRating);
+   	println(testability);	
    	
    	print("Maintainability: ");
-   	maintainabilty = maintainabilityMetric(analysibility,changeability,terability);
+   	maintainabilty = maintainabilityMetric(analysibility,changeability,testability);
    	println(maintainabilty);
-   	
+
  
 }
