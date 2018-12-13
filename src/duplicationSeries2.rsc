@@ -13,15 +13,6 @@ import helpers;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-/*
-% of duplicated lines,
-number of clones,
-number of clone classes,
-biggest clone (in lines),
-biggest clone class,
-example clones.
-*/
-
 public real dupLinesStats (Resource project) {
 
 	int blockSize = 6;
@@ -88,8 +79,6 @@ public real dupLinesStats (Resource project) {
 					}
 				}
 				if (blockDupLines.tempEndLine != 0) {
-					//cloneClasses += [<"linesOfSix",[<"FJFJ",0,0>]>];
-					//cloneClasses[0].classList += [<"ff",0,10>];
 					duplicatedLOC = duplicatedLOC + [blockDupLines];
 					blockDupLines = <0,0>;
 				}
@@ -127,14 +116,18 @@ private void printResultsToJson(loc file, int lOC, list[tuple[int startLine, int
 	appendToFile(results, "\t\t\"file_name\": ", "\"",file,"\",\n");
 	appendToFile(results, "\t\t\"loc\": ", "\"",lOC,"\",\n");
 	appendToFile(results, "\t\t\"clones\": [");
-	if (size(duplicatedLOC) > 0) {
+	if (size(duplicatedLOC) > 1) {
 		int i = 0;
 		for (i <- [0 .. size(duplicatedLOC)-1]) {
 			appendToFile(results, "{\n\t\t\t\"start_line\": ", duplicatedLOC[i].startLine,",\n");
 			appendToFile(results, "\t\t\t\"end_line\": ", duplicatedLOC[i].endLine,"\n\t\t}, ");
 		}
-		appendToFile(results, "{\n\t\t\t\"start_line\": ", duplicatedLOC[i].startLine,",\n");
-		appendToFile(results, "\t\t\t\"end_line\": ", duplicatedLOC[i].endLine,"\n\t\t}]\n");
+		appendToFile(results, "{\n\t\t\t\"start_line\": ", duplicatedLOC[i+1].startLine,",\n");
+		appendToFile(results, "\t\t\t\"end_line\": ", duplicatedLOC[i+1].endLine,"\n\t\t}]\n");
+	}
+	if (size(duplicatedLOC) == 1) {
+		appendToFile(results, "{\n\t\t\t\"start_line\": ", duplicatedLOC[0].startLine,",\n");
+		appendToFile(results, "\t\t\t\"end_line\": ", duplicatedLOC[0].endLine,"\n\t\t}]\n");
 	}
 
 }
@@ -157,3 +150,16 @@ private tuple[int, int] getBiggestClassClone (list [tuple [str lineName, list [t
 	}
 	return <index,max>;
 }
+/*
+private void printStatistictToJson () {
+
+% of duplicated lines,
+number of clones,
+number of clone classes,
+biggest clone (in lines),
+biggest clone class,
+example clones.
+
+int i;
+} 
+*/
