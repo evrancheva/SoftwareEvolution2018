@@ -17,10 +17,11 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 
-public loc file = |project://JavaProject/src/HelloWorld.java|;
-public Resource project = getProject(|project://hsqldb-2.3.1/|);
+//public loc file = |project://JavaProject/src/HelloWorld.java|;
+public Resource project = getProject(|project://smallsql0.21_src/|);
 public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
 public loc fileTest2 = |project://smallsql0.21_src/src/smallsql/database/Columns.java|;
+public loc results = |project://SE/results/results.json|;
 
 public list[str] fileToList(loc file){
 	return readFileLines(file);
