@@ -13,7 +13,7 @@ import helpers;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-public real dupLinesStats (Resource project) {
+public tuple[real dupPerc,int biggestCloneClass] dupLinesStats (Resource project) {
 
 	int blockSize = 6;
 	
@@ -29,8 +29,9 @@ public real dupLinesStats (Resource project) {
 	
 	for (loc file <- projectFiles) {
 		fileCount += 1;
-		list[str] fileLines;
-		fileLines = removeComments(readFileLines(file));
+		list[str] fileLines, originalFileLines;
+		originalFileLines = removeComments(readFileLines(file));
+		fileLines = removeQuotes(originalFileLines);
 		fileClones += [<file, size(fileLines), []>];
 		// if the file contains less than blockSize lines, there is no point on checking for duplicate ones
 		if (size(fileLines) < blockSize) {
@@ -68,7 +69,9 @@ public real dupLinesStats (Resource project) {
 						cloneClasses[index].classList += [<file, blockDupLines.tempStartLine, blockDupLines.tempEndLine>];
 					}
 
-					fileClones[fileCount-1].classList += [<replaceAll(duplicatedString, "\t", "    "), blockDupLines.tempStartLine, blockDupLines.tempEndLine>];
+					str dupStr = createBlocksOfLines(blockDupLines.tempStartLine, blockDupLines.tempEndLine - blockDupLines.tempStartLine, originalFileLines);
+					dupStr = replaceAll(dupStr, "\"", "\'");
+					fileClones[fileCount-1].classList += [<replaceAll(dupStr, "\t", "    "), blockDupLines.tempStartLine, blockDupLines.tempEndLine>];
 					blockDupLines = <0,0>;
 					historyCounter = false;
 				}
@@ -83,16 +86,17 @@ public real dupLinesStats (Resource project) {
 				cloneClasses[index].classList += [<file, blockDupLines.tempStartLine, blockDupLines.tempEndLine>];
 			}
 
-			fileClones[fileCount-1].classList += [<replaceAll(duplicatedString, "\t", "    "), blockDupLines.tempStartLine, blockDupLines.tempEndLine>];
+			str dupStr = createBlocksOfLines(blockDupLines.tempStartLine, blockDupLines.tempEndLine - blockDupLines.tempStartLine, originalFileLines);
+			dupStr = replaceAll(dupStr, "\"", "\'");
+			fileClones[fileCount-1].classList += [<replaceAll(dupStr, "\t", "    "), blockDupLines.tempStartLine, blockDupLines.tempEndLine>];
 			blockDupLines = <0,0>;
 		}
 		historyCounter = false;
 		println(fileCount);
-	} /*
+	}
 	printResultsToJson(fileClones, project, toReal(duplicatedLines)/toReal(totalLines) * 100, duplicatedLines,
 						totalLines, duplicatedLines, getClassesNumber(cloneClasses),
 						getBiggestCloneLines(cloneClasses), getBiggestClassClone(cloneClasses));
-						*/
 
 	appendToFile(cloneResults, "CLONES:");
 	for (i <- [0 .. size(cloneClasses)]) {
@@ -103,13 +107,13 @@ public real dupLinesStats (Resource project) {
 		}
 	}
 
-	return (toReal(duplicatedLines)/toReal(totalLines) * 100);
+	return <(toReal(duplicatedLines)/toReal(totalLines) * 100), getBiggestClassClone(cloneClasses)>;
 	
 } 
 private str createBlocksOfLines(int currLine, int blockSize, list[str] fileLines) {
 	str linesOfBlockSize = "";
 	for (int i <- [currLine .. (currLine+blockSize)]) {
-		linesOfBlockSize += fileLines[i] + "ELITSA";
+		linesOfBlockSize += fileLines[i] + "LiNeBrEaK";
 	}
 	return linesOfBlockSize;
 }
@@ -174,26 +178,42 @@ private void printResultsToJson(list [tuple [loc fileName, int fileLines, list [
 	appendToFile(results, "\t\"biggest_clone_class\": \"", biggestCloneClass, "\",\n");
 	
 	appendToFile(results, "\t\"example_clones\": {\n");
-	int i,j = 0;
-	for (i <- [0 .. 4]) {
-		while (size(fileClones[j].classList) < 1) {
+	int i,j = 0, exampleNum = 5;
+	while (j < size(fileClones) && size(fileClones[j].classList) < 1) {
 			j += 1;
 		}
-		appendToFile(results, "\t\t\"clone_", i+1, "\": {\n");
+		if (j < size(fileClones)) {
+			appendToFile(results, "\t\t\"clone_", 1, "\": {\n");
+			appendToFile(results, "\t\t\t\"lines\": \"", fileClones[j].classList[0].startLine,"-", fileClones[j].classList[0].endLine, "\",\n");
+			appendToFile(results, "\t\t\t\"code_lines\": \"", fileClones[j].classList[0].lineName, "\",\n");
+			appendToFile(results, "\t\t\t\"file\": \"", fileClones[j].fileName, "\"\n");
+			j += 1;
+	}
+	for (i <- [1 .. exampleNum - 1]) {
+		while (j < size(fileClones) && size(fileClones[j].classList) < 1) {
+			j += 1;
+		}
+		if (j < size(fileClones)) {
+			appendToFile(results, "\t\t},\n");
+			appendToFile(results, "\t\t\"clone_", i+1, "\": {\n");
+			appendToFile(results, "\t\t\t\"lines\": \"", fileClones[j].classList[0].startLine,"-", fileClones[j].classList[0].endLine, "\",\n");
+			appendToFile(results, "\t\t\t\"code_lines\": \"", fileClones[j].classList[0].lineName, "\",\n");
+			appendToFile(results, "\t\t\t\"file\": \"", fileClones[j].fileName, "\"\n");
+			appendToFile(results, "\t\t},\n");
+			j += 1;
+		}
+	}
+	while (j < size(fileClones) && size(fileClones[j].classList) < 1) {
+		j += 1;
+	}
+	if (j < size(fileClones)) {
+		appendToFile(results, "\t\t\"clone_", exampleNum, "\": {\n");
 		appendToFile(results, "\t\t\t\"lines\": \"", fileClones[j].classList[0].startLine,"-", fileClones[j].classList[0].endLine, "\",\n");
 		appendToFile(results, "\t\t\t\"code_lines\": \"", fileClones[j].classList[0].lineName, "\",\n");
 		appendToFile(results, "\t\t\t\"file\": \"", fileClones[j].fileName, "\"\n");
-		appendToFile(results, "\t\t},\n");
-		j += 1;
 	}
-	while (size(fileClones[j].classList) < 1) {
-			j += 1;
-		}
-	appendToFile(results, "\t\t\"clone_", 5, "\": {\n");
-	appendToFile(results, "\t\t\t\"lines\": \"", fileClones[j].classList[0].startLine,"-", fileClones[j].classList[0].endLine, "\",\n");
-	appendToFile(results, "\t\t\t\"code_lines\": \"", fileClones[j].classList[0].lineName, "\",\n");
-	appendToFile(results, "\t\t\t\"file\": \"", fileClones[j].fileName, "\"\n");
 	appendToFile(results, "\t\t}\n\t},\n\t\"files\": [{\n");
+
 	
 	i = 0;
 	while (i < size(fileClones)-1) {
@@ -238,7 +258,7 @@ private void printResultsToJson(list [tuple [loc fileName, int fileLines, list [
 				appendToFile(results, "\t\t}, {\n");
 				j += 1;
 			}
-			appendToFile(results, "\t\t\t\"start_line\": ", fileClones[i].classList[j1].startLine, ",\n");
+			appendToFile(results, "\t\t\t\"start_line\": ", fileClones[i].classList[j].startLine, ",\n");
 			appendToFile(results, "\t\t\t\"end_line\": ", fileClones[i].classList[j].endLine, ",\n");
 			appendToFile(results, "\t\t\t\"code_lines\": \"", fileClones[i].classList[j].lineName, "\"\n");
 			appendToFile(results, "\t\t}]\n\t}]\n}");

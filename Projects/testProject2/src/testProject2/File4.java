@@ -25,6 +25,7 @@ public class File4 {
          }
       }
    }
+   clone3;
        boolean check()  
     {  
         if(current==0)  
