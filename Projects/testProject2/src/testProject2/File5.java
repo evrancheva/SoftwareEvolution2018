@@ -68,6 +68,10 @@ class File5 extends JFrame implements ActionListener
         jb[4].setSelected(true);  
         jb[j].setBounds(50,80+5,200,20);  
     }  
+    public static void main(String s[])  
+    {  
+        new File1("Online Test Of Java");  
+    }  
     boolean check()  
     {  
         if(current==0)  
@@ -92,8 +96,5 @@ class File5 extends JFrame implements ActionListener
             return(jb[2].isSelected());  
         return false;  
     }  
-    public static void main(String s[])  
-    {  
-        new File1("Online Test Of Java");  
-    }  
+
 }

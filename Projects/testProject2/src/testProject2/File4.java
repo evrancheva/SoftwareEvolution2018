@@ -4,7 +4,28 @@ import java.awt.event.*;
 import javax.swing.*;  
   
 public class File4 {
-    boolean check()  
+   public static void main(String args[]) throws IOException {  
+      FileInputStream in = null;
+      FileOutputStream out = null;
+
+      try {
+         in = new FileInputStream("input.txt");
+         out = new FileOutputStream("output.txt");
+         
+         int c;
+         while ((c = in.read()) != -1) {
+            out.write(c);
+         }
+      }finally {
+         if (in != null) {
+            in.close();
+         }
+         if (out != null) {
+            out.close();
+         }
+      }
+   }
+       boolean check()  
     {  
         if(current==0)  
             return(jb[1].isSelected());  
@@ -28,25 +49,5 @@ public class File4 {
             return(jb[2].isSelected());  
         return false;  
     }  
-   public static void main(String args[]) throws IOException {  
-      FileInputStream in = null;
-      FileOutputStream out = null;
 
-      try {
-         in = new FileInputStream("input.txt");
-         out = new FileOutputStream("output.txt");
-         
-         int c;
-         while ((c = in.read()) != -1) {
-            out.write(c);
-         }
-      }finally {
-         if (in != null) {
-            in.close();
-         }
-         if (out != null) {
-            out.close();
-         }
-      }
-   }
 }
