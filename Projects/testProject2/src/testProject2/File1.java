@@ -161,7 +161,8 @@ class File1 extends JFrame implements ActionListener
     public static void main(String s[])  
     {  
         new File1("Online Test Of Java");  
-    }  
+    }
+    originalPart;
     boolean check()  
     {  
         if(current==0)  
@@ -185,6 +186,7 @@ class File1 extends JFrame implements ActionListener
         if(current==9)  
             return(jb[2].isSelected());  
         return false;  
-    }  
+    }
+    originalpartEnd;
 
 }

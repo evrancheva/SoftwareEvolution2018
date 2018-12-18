@@ -16,7 +16,6 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-
 public Resource bigProject = getProject(|project://hsqldb-2.3.1/|);
 public Resource project = getProject(|project://smallsql0.21_src/|);
 public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
@@ -36,20 +35,24 @@ public list[loc] projectToList (Resource project) {
 	}
 	return projectFiles;
 }
-
-
+public list[str] removeQuotes(list[str] stringsInput) {
+	// Removing quotes.
+	int i = 0;
+	while (i < size(stringsInput)) {
+		<stringsInput, i> = removeQuotes(stringsInput, i);
+		i += 1;
+	}
+	return stringsInput;
+}
 public list[str] removeComments(list[str] stringsInput) {
 	int i = 0;
 	while (i < size(stringsInput)) {
 		stringsInput[i] = trim(stringsInput[i]);
-
-		// Removing quotes.
-		<stringsInput, i> = removeQuotes(stringsInput, i);
 		
 		// Dropping the comments of type "//..." from a line. If the line contained only a comment
 		// of type "//...", then it deletes the line completely.
 		if (i < size(stringsInput)) {
-			<stringsInput, i> = removeCommentsType1(stringsInput, i);
+		<stringsInput, i> = removeCommentsType1(stringsInput, i);
 		}
 		// Checking for comments of type "/* ... */" that start and end in the same line.
 		// Then it drops the comment area from the line. If the line contained only comment
@@ -76,6 +79,16 @@ public list[str] removeComments(list[str] stringsInput) {
 	return stringsInput;
 }
 
+public Declaration removeIdentifiers(loc fileTest) {
+
+	Declaration testt = createAstFromFile(fileTest, true);
+	return visit(testt){
+		case \method(x, _, y, z, q) 		=> \method(x, "methodName", y, z, q)
+	}
+	
+
+}
+
 public tuple[list[str], int] removeQuotes(list[str] stringsInput, int currLine) {
 	while(size(findAll(stringsInput[currLine], "\"")) >= 2) {
 		int quoteStarts = findFirst(stringsInput[currLine], "\"");
@@ -83,10 +96,10 @@ public tuple[list[str], int] removeQuotes(list[str] stringsInput, int currLine) 
 		int quoteEnds = findFirst(stringsInput[currLine], "\"");
 		str tempStr = trim(substring(stringsInput[currLine], 0, quoteStarts));
 		stringsInput[currLine] = tempStr + trim(substring(stringsInput[currLine], quoteEnds+1));
-		if (stringsInput[currLine] == "") {
+		/*if (stringsInput[currLine] == "") {
 			stringsInput = delete(stringsInput, currLine);
 			currLine -= 1;
-		}
+		} */
 	}
 	return <stringsInput, currLine>;
 }

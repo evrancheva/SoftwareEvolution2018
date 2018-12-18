@@ -17,7 +17,9 @@ class File3 extends JFrame implements ActionListener
            System.exit(0);  
         }  
     }  
-    void set()  
+    void set()
+    clone2;
+    boolean check()  
     boolean check()  
     {  
         if(current==0)  
@@ -32,7 +34,16 @@ class File3 extends JFrame implements ActionListener
             return(jb[2].isSelected());  
         if(current==5)  
             return(jb[2].isSelected());  
+        if(current==6)  
+            return(jb[1].isSelected());  
+        if(current==7)  
+            return(jb[3].isSelected());  
+        if(current==8)  
+            return(jb[1].isSelected());  
+        if(current==9)  
+            return(jb[2].isSelected());  
         return false;  
-    }  
+    }
+    clone2End;
  
 }

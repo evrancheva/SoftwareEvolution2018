@@ -8,6 +8,7 @@ import javax.swing.*;
   
 class File2 extends JFrame implements ActionListener  
 {  
+	clone1;
     boolean check()  
     {  
         if(current==0)  
@@ -31,5 +32,6 @@ class File2 extends JFrame implements ActionListener
         if(current==9)  
             return(jb[2].isSelected());  
         return false;  
-    }  
+    }
+    clone1End;
 }
