@@ -1,5 +1,5 @@
 import java.io.*;
-public class ByeWorld {
+public class File1 {
 
    public static void main(String args[]) throws IOException {  
       FileInputStream in = null;
