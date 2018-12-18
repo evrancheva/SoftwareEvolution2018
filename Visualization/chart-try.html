@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Series 2</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	 <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" language="javascript" src="smallsql.js"></script> 
+	<style type="text/css">
+#chart {
+  display: grid;
+  /*grid-template-columns: repeat(50, 1fr);*/
+  grid-column-gap: 5px;
+}
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background-color: #eee;
+  display: flex;
+  justify-content: center;
+}
+
+#chart {
+  height: 100vh;
+  width: 70vw;
+  /* other chart styles go here */
+}
+.bar {
+  cursor: pointer;
+  opacity: 0.7;
+  grid-row-start: 1;
+  /*grid-row-end: 200;*/
+  background-color: #b3d7ff;
+  border-radius: 0 0px 5px 5px;
+  position: relative;
+      display: grid;
+}
+[class*="bar"]:hover{
+	opacity: 1;
+}
+.title{
+	writing-mode: vertical-lr;
+    position: absolute;
+    padding: 5px 50%;
+    cursor: default;
+}
+.line{
+    background-color: #ff5050;
+}
+/* Pagination */
+.previous, .next {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+  display: block;
+    height: 40px;
+    width: 100px;
+    text-align:center;
+}
+.modal-title{
+  display: inline;
+  font-weight: bold;
+  /*text-transform: uppercase;*/
+}
+/*.previous:hover, .next:hover {
+  background-color: #ddd;
+  color: black;
+}*/
+.previous{
+      margin-right: 10px;
+}
+.next{
+      margin-left: 10px;
+}
+.previous, .next{
+  cursor: pointer;
+	/*background-color: #0077ff;*/
+	color:white;
+}
+.example-clones, #code{
+  overflow-y: scroll;
+  max-height: 300px;
+  border-radius: 3px;
+  border: 1px lightgrey solid;
+}
+</style>
+</head>
+<body>
+
+<div>
+</div>
+<span class="previous btn btn-primary">&laquo; Previous</span>
+<div id="chart">
+ 
+</div>
+<span class="next btn btn-primary">Next &raquo;</span>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="project_name">Project Name</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="clones-info">
+        	<b> Percentage of duplicated lines: </b><span class="duplicates_percentage"> </span>
+        </div>
+        <div class="clones-info">
+         <b> Total lines of code of project: </b><span class="loc_project"> </span>
+        </div>
+         <div class="clones-info">
+        	<b>Total duplicated lines: </b><span class="total_duplicated_lines"> </span>
+        </div>
+        <div class="clones-info">
+        	<b> Number of clones:</b> <span class="number_of_clones"> </span>
+        </div>
+        <div class="clones-info">
+        	<b> Number of classes: </b> <span class="number_of_classes"> </span>
+        </div>
+        <div class="clones-info">
+        	<b> Biggest clone lines: </b><span class="biggest_clone_lines"> </span>
+        </div>
+        <div class="clones-info">
+        	<b> Biggest clone class: </b><span class="biggest_clone_class"> </span>
+        </div>
+        <div class="clones-info">
+          <b> Example clones: </b>
+        </div>
+        <div class="example-clones">
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">See clones per files</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--- Modal for file -->
+
+<div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="file_name">Project Name</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="clones-info">
+          <b> Full location: </b><span class="full_location"> </span>
+        </div>
+        <div class="clones-info">
+          <b> Lines of code of file: </b><span class="file_loc"> </span>
+        </div>
+        <div class="clones-info">
+          <b> Number of clones: </b><span class="number_of_clones"> </span>
+        </div>
+        <div id="code">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+
+<script>
+
+
+var dataset = smallsql;
+// var additional_info = smallsql_info;
+
+var parsed_dataset = (dataset);
+console.log(parsed_dataset);
+var number_of_files = parsed_dataset.files.length;
+// var parsed_additional_info = JSON.parse(additional_info);
+var pagination = false;
+var limit = 30;
+var temp_limit2 = limit;
+var st_index = 0;
+var divide = 1.7;
+var multipler = 1;
+var max_loc = 0;
+
+function barOnclick() {
+  $
+  // body...
+}
+
+
+$( document ).ready(function() {
+	$(window).on('load',function(){
+        displayInfoForProject();
+        $('#myModal').modal('show');
+    });
+   	max_loc = getMaxLoc();
+    setTemplateRows("grid-template-rows","chart",Math.round(max_loc*multipler));
+
+
+    var bars = createBars(0,limit);
+    var temp_limit = 0;
+    if(typeof bars != undefined){
+	    var start_index_bars = bars[0];
+	    var end_index_bars = bars[1];
+	    	pagination = true;
+	    $(window).keydown(function(event){
+		    if(event.keyCode == 39){
+		    	nextPagination(st_index, temp_limit2);
+		    }
+		    else if(event.keyCode == 37){
+		    	previousPagination(st_index-limit,temp_limit2-limit);
+		    }
+		});
+  if(st_index == 0){
+    $('.previous').addClass('disabled');
+  }
+
+	$('.next').click(function() {		    		
+	    	nextPagination(st_index, temp_limit2);
+	    });
+ $('.previous').click(function() {
+			previousPagination(st_index-limit,temp_limit2-limit);
+		});
+	}
+    insertInnerBars();
+
+});
+
+function displayMoreInfoPerFile(bar_id) {
+  var file = bar_id.match(/\d+/)[0]; 
+  var file_info = parsed_dataset.files[file];
+  $("#file_name").text(getNameOfFile(file_info.file_name));
+  $(".full_location").text((file_info.file_name));
+  $(".file_loc").text((file_info.loc));
+  if(file_info.clones[0].start_line != 0 && file_info.clones[0].end_line != 0){
+     $(".number_of_clones").text((file_info.clones).length);
+  }
+  else{
+     $(".number_of_clones").text(0);
+  }
+  $('#code').empty();
+  for(var j = 0; j < Object.keys(file_info.clones).length;j++){
+ if(file_info.clones[j].start_line != 0 && file_info.clones[j].end_line != 0){
+    jQuery('<span/>', {
+            class: 'code',
+            html: '<b><u>Duplicate ' + (j+1) +'</u></b><br> Lines: ' + file_info.clones[j].start_line + " - " + file_info.clones[j].end_line + "<br>"
+        }).appendTo('#code');
+
+    jQuery('<code/>', {
+            class: 'code',
+            html: formatCode(file_info.clones[j].code_lines)+'<br>'
+        }).appendTo('#code');
+
+  }
+  // console.log(file_info);
+}
+    $('#fileModal').modal('show');
+}
+function formatCode(dup){
+  return dup.replace(/ELITSA/g, "<br>");
+}
+function displayInfoForProject(){
+  $("#project_name").html("Project: " + parsed_dataset.name_of_project);
+  $(".duplicates_percentage").text(parsed_dataset.duplicates_percentage + "%");
+  $(".total_duplicated_lines").text(parsed_dataset.total_duplicated_lines);
+  $(".loc_project").text(parsed_dataset.loc_project);
+  $(".number_of_clones").text(parsed_dataset.number_of_clones);
+  $(".number_of_classes").text(parsed_dataset.number_of_classes);
+    $(".biggest_clone_class").text(parsed_dataset.biggest_clone_class);
+  $(".biggest_clone_lines").text(parsed_dataset.biggest_clone_lines);
+  for(var j = 0; j < Object.keys(parsed_dataset.example_clones).length;j++){
+    jQuery('<span/>', {
+            class: 'code',
+            html: '<b><u>Duplicate ' + (j+1) +'</u></b><br>Filename: ' + (parsed_dataset.example_clones['clone_'+(j+1)].file) + '<br> Lines: ' + parsed_dataset.example_clones['clone_' +(j+1)].lines + "<br>"
+        }).appendTo('.example-clones');
+
+    jQuery('<code/>', {
+            class: 'code',
+            html: formatCode(parsed_dataset.example_clones['clone_' + (j+1)].code_lines) + "<br>"
+        }).appendTo('.example-clones');
+   
+  }
+}
+
+function fullPath() {
+	var title = $(this).attr('title');
+	$(this).find('.title').text(title);	
+}
+function justName(){
+	var title = $(this).attr('title');
+	 $(this).find('.title').text(getNameOfFile(title));
+}
+
+function getNameOfFile(fullpath) {
+	var res = fullpath.split("/");
+	var last_element = res[res.length-1].replace('|','');
+	return last_element;
+}
+function nextPagination(start_index_bars,temp_limit){	
+  $('.previous').removeClass('disabled');
+	if(number_of_files > st_index + limit){
+			temp_limit2 = temp_limit2 + limit;
+		  st_index = st_index + limit;
+		$("#chart").empty();
+		createBars(st_index,temp_limit2);
+		insertInnerBars();
+	}else{
+    $('.next').addClass('disabled');
+  }
+  console.log(st_index,temp_limit2);
+		
+}
+
+function previousPagination(start_index_bars,temp_limit){
+    $('.next').removeClass('disabled');
+  if(st_index == limit){
+    $('.previous').addClass('disabled');
+  }
+  
+	temp_limit2 = temp_limit2 - limit;
+	st_index = st_index - limit;
+	if(st_index >= 0){
+		$("#chart").empty();
+		createBars(st_index,temp_limit);
+		insertInnerBars();
+	}
+}
+function getMaxLoc(){
+	var max_loc = 0;
+	for(var i = 0; i < number_of_files; i++) {
+		if(parseInt(parsed_dataset.files[i].loc) > max_loc){
+			max_loc = parseInt(parsed_dataset.files[i].loc);
+		}
+	}
+	if(max_loc > 1000){
+		multipler = 1000/max_loc;
+	}
+	return max_loc;
+}
+
+
+function setTemplateRows(property,id,loc){
+	$("#" + id).css(property, "repeat("+ loc + ", 1fr)")
+}
+
+function createBars(start_index,end_index_bars){
+	var displayed = false;
+	var count = 0;
+	// var limit = 2;
+	// 0, limit
+	// limit = 2; i = 2; 
+
+	for(var i = start_index; i < end_index_bars; i++) {
+		// if(i < limit){
+	
+		if(typeof parsed_dataset.files[i] !== "undefined"){
+		var loc_divided = Math.round((parsed_dataset.files[i].loc)*multipler);
+	    jQuery('<div/>', {
+			    id: 'bar-' + i,
+	    		class: 'bar',
+	    		title: parsed_dataset.files[i].file_name,
+	    		css: {
+        			"grid-row-end" : String(loc_divided), 
+   				},
+			}).appendTo('#chart');
+	    setTemplateRows("grid-template-rows","bar-"+i,loc_divided);
+
+		 jQuery('<div/>', {
+	    		class: 'title',
+	    		text: getNameOfFile(parsed_dataset.files[i].file_name),
+			}).appendTo('#bar-'+i);
+			display = true;
+			count = i;
+		}
+	}
+	// where to start, double the limit
+	return[count+1,limit];
+}
+var ar = []
+
+function formRightBars(clones) {
+    var current_element;
+    var next_element;
+    var arr = [];
+    // console.log(clones);
+    for (var i = 0; i < Object.keys(clones).length; i++) {
+        current_element = clones[i];
+        next_element = clones[i + 1];
+        if (next_element != undefined) {
+            if (current_element.end_line < next_element.start_line) {
+                // console.log(5);
+                if (clones[i - 1] == undefined) {
+                    row_start = (clones[0].start_line);
+                } else {
+                    row_start = ((clones[i].start_line));
+
+                }
+                row_end = (current_element.end_line);
+            } else {
+
+
+                 var index;
+            if (clones[i - 1] == undefined) {
+                index = 0;
+            } else {
+                index = i - 1;
+            }
+            if (clones[index].end_line >= current_element.start_line) {
+                row_start = clones[index].end_line + 1;
+            } else {
+                row_start = current_element.start_line;
+               
+            }
+            row_end = (current_element.end_line);
+            }
+
+             // console.log(row_start,row_end);  
+        } else {
+            // console.log(1);
+            var index;
+            if (clones[i - 1] == undefined) {
+                index = 0;
+            } else {
+                index = i - 1;
+            }
+            if (clones[index].end_line >= current_element.start_line) {
+                row_start = clones[index].end_line +1;
+            } else {
+                row_start = current_element.start_line;
+            }
+            row_end = (current_element.end_line);
+
+        }
+        arr.push([Math.round(row_start*multipler), Math.round(row_end*multipler)]);
+    }
+
+
+    return arr;
+}
+function insertInnerBars(){
+      $('.bar').click(function() {          
+        displayMoreInfoPerFile(this.id);
+      });   
+
+for(var i = 0; i < number_of_files; i++) {
+		var clones = parsed_dataset.files[i].clones;
+    // console.log(clones);
+
+if(clones != undefined){
+   var bars = formRightBars(clones); 
+    var el = formatBars(bars);
+    // console.log(el);
+    // console.log(el);
+
+    // console.log(clones);
+		for(var j = 0; j < el.length;j++){
+        jQuery('<div/>', {
+            id: 'line-' + j,
+            class: 'line',
+            css: {
+              "grid-row-start": String(el[j][0]),
+              "grid-row-end": String(el[j][1]),
+            },
+        }).appendTo('#bar-'+i);
+    }
+      
+  		
+  	}	
+    // console.log(ar[7]);
+  }
+}
+function formatBars(clones) {
+    var current_element;
+    var next_element;
+    var arr = [];
+
+    // console.log(clones);
+    for (var i = 0; i < (clones).length; i++) {
+        current_element = clones[i];
+        next_element = clones[i + 1];
+        if (next_element != undefined) {
+            if (current_element[1] < next_element[0]) {
+                // console.log(5);
+                if (clones[i - 1] == undefined) {
+                    row_start = (clones[0][0]);
+                } else {
+                    row_start = ((clones[i][1]));
+                }
+                row_end = (current_element[1]);
+            } else {
+
+
+                var index;
+                if (clones[i - 1] == undefined) {
+                    index = 0;
+                } else {
+                    index = i - 1;
+                }
+                if (clones[index][1] >= current_element[0]) {
+                    row_start = clones[index][1] + 1;
+                    // console.log(clones[index][1] + 1);
+                } else {
+                    row_start = current_element[0];
+                       // console.log(row_start);
+                }
+
+                row_end = (current_element[1]);
+            }
+
+            // console.log(row_start,row_end);  
+        } else {
+            // console.log(1);
+            var index;
+            if (clones[i - 1] == undefined) {
+                index = 0;
+            } else {
+                index = i - 1;
+            }
+            if (clones[index][1] >= current_element[0]) {
+                row_start = clones[index][1] + 1;
+            } else {
+                row_start = current_element[0];
+
+
+            }
+            row_end = (current_element[1]);
+        }
+        arr.push([row_start,row_end]);
+    }
+    return arr;
+}
+</script>
