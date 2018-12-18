@@ -1,3 +1,5 @@
+package testProject1;
+
 import java.io.*;
 public class File1 {
 
