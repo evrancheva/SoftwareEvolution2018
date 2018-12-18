@@ -22,6 +22,8 @@ public Resource project = getProject(|project://smallsql0.21_src/|);
 public loc fileTest = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
 public loc fileTest2 = |project://smallsql0.21_src/src/smallsql/database/Columns.java|;
 public loc results = |project://SE/results/results.json|;
+public loc cloneResults = |project://SE/results/cloneResults.json|;
+
 
 public list[str] fileToList(loc file){
 	return readFileLines(file);
@@ -40,78 +42,102 @@ public list[str] removeComments(list[str] stringsInput) {
 	int i = 0;
 	while (i < size(stringsInput)) {
 		stringsInput[i] = trim(stringsInput[i]);
-		
-		
+
 		// Removing quotes.
-		while(size(findAll(stringsInput[i], "\"")) >= 2) {
-			int quoteStarts = findFirst(stringsInput[i], "\"");
-			stringsInput[i] = replaceFirst(stringsInput[i], "\"", "");
-			int quoteEnds = findFirst(stringsInput[i], "\"");
-			tempStr = trim(substring(stringsInput[i], 0, quoteStarts));
-			stringsInput[i] = tempStr + trim(substring(stringsInput[i], quoteEnds+1));
-			if (stringsInput[i] == "") {
-				stringsInput = delete(stringsInput, i);
-				i = i - 1;
-			}
-		}
-		
-		// Checking for comments of type "/* ... */" that start and end in the same line.
-		// Then it drops the comment area from the line. If the line contained only comment
-		// it gets removed completely.
-		while ((findFirst(stringsInput[i], "/*") != -1) && (findFirst(stringsInput[i], "*/") != -1)) {
-			while ((findFirst(stringsInput[i], "/*") < (findFirst(stringsInput[i], "*/")))) {
-				tempStr = trim(substring(stringsInput[i], 0, findFirst(stringsInput[i], "/*")));
-				stringsInput[i] = tempStr + trim(substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2));
-				if (stringsInput[i] == "") {
-					stringsInput = delete(stringsInput, i);
-					i = i - 1;
-				}
-			}
-		}
+		<stringsInput, i> = removeQuotes(stringsInput, i);
 		
 		// Dropping the comments of type "//..." from a line. If the line contained only a comment
 		// of type "//...", then it deletes the line completely.
-		if (findFirst(stringsInput[i], "//") != -1) {
-			stringsInput[i] = trim(substring(stringsInput[i], 0, findFirst(stringsInput[i], "//")));
-			if (stringsInput[i] == "") {
-				stringsInput = delete(stringsInput, i);
-				i = i - 1;
-			}
+		if (i < size(stringsInput)) {
+			<stringsInput, i> = removeCommentsType1(stringsInput, i);
+		}
+		// Checking for comments of type "/* ... */" that start and end in the same line.
+		// Then it drops the comment area from the line. If the line contained only comment
+		// it gets removed completely.
+		if (i < size(stringsInput)) {
+			<stringsInput, i> = removeCommentsType2(stringsInput, i);
 		}
 		
 		// Checking for comments of type "/* ... */" that start from a line and end at another
 		// line and  deletes all lines in between.
-		else if (findFirst(stringsInput[i], "/*") != -1) {
-			
-			stringsInput[i] = trim(substring(stringsInput[i], 0, findFirst(stringsInput[i], "/*")));
-			if (stringsInput[i] == "") {
-				stringsInput = delete(stringsInput, i);
-				i = i - 1;
-			}
-			i = i + 1;
-			stringsInput[i] = trim(stringsInput[i]);
-			while (i < size(stringsInput) && findFirst(stringsInput[i], "*/") == -1) {
-				stringsInput[i] = trim(stringsInput[i]);
-				stringsInput = delete(stringsInput, i);
-			}
-			if (i < size(stringsInput)) {
-				stringsInput[i] = trim(stringsInput[i]);			
-				stringsInput[i] = trim(substring(stringsInput[i], findFirst(stringsInput[i], "*/")+2));
-				if (stringsInput[i] == "") {
-				stringsInput = delete(stringsInput, i);
-				i = i - 1;
-				}
-			}
+		if (i < size(stringsInput)) {
+			<stringsInput, i> = removeCommentsType3(stringsInput, i);
 		}
 		
 		// After trimming, if the line is empty, we delete it.
-		else if (i < size(stringsInput) && stringsInput[i] == "") {
+		if (i > 0 && i < size(stringsInput) && stringsInput[i] == "") {
 			stringsInput = delete(stringsInput, i);
 			i = i - 1;
 		}
-		i = i + 1;
+		i += 1;
 	}
+	//println(size(stringsInput));
+	//exit(1);
 	return stringsInput;
+}
+
+public tuple[list[str], int] removeQuotes(list[str] stringsInput, int currLine) {
+	while(size(findAll(stringsInput[currLine], "\"")) >= 2) {
+		int quoteStarts = findFirst(stringsInput[currLine], "\"");
+		stringsInput[currLine] = replaceFirst(stringsInput[currLine], "\"", "");
+		int quoteEnds = findFirst(stringsInput[currLine], "\"");
+		str tempStr = trim(substring(stringsInput[currLine], 0, quoteStarts));
+		stringsInput[currLine] = tempStr + trim(substring(stringsInput[currLine], quoteEnds+1));
+		if (stringsInput[currLine] == "") {
+			stringsInput = delete(stringsInput, currLine);
+			currLine -= 1;
+		}
+	}
+	return <stringsInput, currLine>;
+}
+public tuple[list[str], int] removeCommentsType1(list[str] stringsInput, int currLine) {
+	if (findFirst(stringsInput[currLine], "//") != -1) {
+		stringsInput[currLine] = trim(substring(stringsInput[currLine], 0, findFirst(stringsInput[currLine], "//")));
+		if (stringsInput[currLine] == "") {
+			stringsInput = delete(stringsInput, currLine);
+			currLine -= 1;
+		}
+	}
+	return <stringsInput, currLine>;
+}
+
+public tuple[list[str], int] removeCommentsType2(list[str] stringsInput, int currLine) {
+	while ((findFirst(stringsInput[currLine], "/*") != -1) && (findFirst(stringsInput[currLine], "*/") != -1)) {
+		while ((findFirst(stringsInput[currLine], "/*") < (findFirst(stringsInput[currLine], "*/")))) {
+			tempStr = trim(substring(stringsInput[currLine], 0, findFirst(stringsInput[currLine], "/*")));
+			stringsInput[currLine] = tempStr + trim(substring(stringsInput[currLine], findFirst(stringsInput[currLine], "*/")+2));
+			if (stringsInput[currLine] == "") {
+				stringsInput = delete(stringsInput, currLine);
+				currLine -= 1;
+			}
+		}
+	}
+	return <stringsInput, currLine>;
+}
+public tuple[list[str] stringsInput, int currLine] removeCommentsType3 (list[str] stringsInput,int currLine) {
+	if (findFirst(stringsInput[currLine], "/*") != -1) {
+		
+		stringsInput[currLine] = trim(substring(stringsInput[currLine], 0, findFirst(stringsInput[currLine], "/*")));
+		if (stringsInput[currLine] == "") {
+			stringsInput = delete(stringsInput, currLine);
+			currLine -= 1;
+		}
+		currLine += 1;
+		stringsInput[currLine] = trim(stringsInput[currLine]);
+		while (currLine < size(stringsInput) && findFirst(stringsInput[currLine], "*/") == -1) {
+			stringsInput[currLine] = trim(stringsInput[currLine]);
+			stringsInput = delete(stringsInput, currLine);
+		}
+		if (currLine < size(stringsInput)) {
+			stringsInput[currLine] = trim(stringsInput[currLine]);			
+			stringsInput[currLine] = trim(substring(stringsInput[currLine], findFirst(stringsInput[currLine], "*/")+2));
+			if (stringsInput[currLine] == "") {
+				stringsInput = delete(stringsInput, currLine);
+				currLine -= 1;
+			}
+		}
+	}
+	return <stringsInput, currLine>;
 }
 
 public int countCodeLines(loc file){

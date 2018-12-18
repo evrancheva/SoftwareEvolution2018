@@ -29,9 +29,9 @@
 			"file": "|project://smallsql0.21_src/src/smallsql/junit/TestThreads.java|"
 		},
 		"clone_5": {
-			"lines": "89-107",
-			"code_lines": "init();ELITSAConnection con = AllTests.getConnection();ELITSAStatement st = con.createStatement();ELITSAResultSet rs;ELITSAString oldValue;ELITSArs = st.executeQuery(+ table1 +);ELITSAassertTrue( rs.next() );oldValue = rs.getString();assertNull(oldValue);assertTrue( rs.next() );oldValue = rs.getString();int count = 1;while(rs.next()){String newValue = rs.getString();assertTrue( oldValue ++ newValue, oldValue.compareTo( newValue ) < 0 );oldValue = newValue;count++;}",
-			"file": "|project://smallsql0.21_src/src/smallsql/junit/TestOrderBy.java|"
+			"lines": "31-39",
+			"code_lines": "Connection con = AllTests.getConnection();ELITSAtry{ELITSAcon.createStatement().execute();ELITSAassertRowCount( 0,);ELITSAcon.createStatement().execute();ELITSAassertRowCount( 1,);ELITSAassertRowCount( 0,);Statement st = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);",
+			"file": "|project://smallsql0.21_src/src/smallsql/junit/TestScrollable.java|"
 		}
 	},
 	"files": [{
